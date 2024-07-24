@@ -4,9 +4,13 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "../include/file.h"
 #include "../include/common.h"
+
+#define MORE_LINES 1024
+#define MORE_CHARS 1024
 
 int file_content(const char *file_path, char **out_file_content)
 {
@@ -16,9 +20,9 @@ int file_content(const char *file_path, char **out_file_content)
         return STATUS_ERROR;
     }
 
-    int fd = open(file_path, O_RDONLY);
+    FILE *fd = fopen(file_path, "r");
 
-    if (fd == -1)
+    if (fd == NULL)
     {
         perror("Error opening file");
         return STATUS_ERROR;
@@ -28,17 +32,17 @@ int file_content(const char *file_path, char **out_file_content)
 
     if (stat(file_path, stats) == -1)
     {
-        close(fd);
+        fclose(fd);
         free(stats);
         perror("Error getting stats for file");
         return STATUS_ERROR;
     }
 
-    *out_file_content = (char *)malloc(stats->st_size);
+    *out_file_content = (char *)malloc(stats->st_size - 1);
 
-    read(fd, *out_file_content, stats->st_size);
+    char **file_content = malloc(sizeof(char *) * MORE_LINES);
 
-    close(fd);
+    fclose(fd);
     free(stats);
 
     return STATUS_SUCCESS;
