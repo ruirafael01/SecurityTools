@@ -9,10 +9,10 @@
 #include "../include/file.h"
 #include "../include/common.h"
 
-#define MORE_LINES 1024
-#define MORE_CHARS 1024
+#define DEFAULT_NUMBER_LINES 1024
+#define DEFAULT_LINE_SIZE 1024
 
-int file_content(const char *file_path, char **out_file_content)
+int file_content(const char *file_path, struct wordlist **out_wordlist)
 {
     if (file_path == NULL)
     {
@@ -28,22 +28,62 @@ int file_content(const char *file_path, char **out_file_content)
         return STATUS_ERROR;
     }
 
-    struct stat *stats = (struct stat *)malloc(sizeof(struct stat));
+    struct wordlist *out = (struct wordlist *)malloc(sizeof(struct wordlist));
 
-    if (stat(file_path, stats) == -1)
+    char **file_content = malloc(sizeof(char *) * DEFAULT_NUMBER_LINES);
+
+    char c = 0;
+    size_t characters_read = 0;
+    size_t lines_read = 0;
+    size_t iteration_number = 0;
+
+    while (!feof(fd))
     {
-        fclose(fd);
-        free(stats);
-        perror("Error getting stats for file");
-        return STATUS_ERROR;
+        c = fgetc(fd);
+
+        if (characters_read == 0)
+        {
+            file_content[lines_read] = malloc(DEFAULT_LINE_SIZE);
+        }
+
+        // If its not a newline character than we have not reach the end of the line
+        if (c != '\n')
+        {
+            file_content[lines_read][characters_read] = c;
+
+            characters_read++;
+
+            // Detect if more memory needs to be allocated
+            if (characters_read % DEFAULT_LINE_SIZE == 0)
+            {
+                file_content[lines_read] = realloc(file_content[lines_read], characters_read + DEFAULT_LINE_SIZE);
+            }
+        }
+        else
+        {
+            file_content[lines_read] = realloc(file_content[lines_read], characters_read + 1);
+
+            characters_read = 0;
+            lines_read++;
+
+            if (lines_read % DEFAULT_NUMBER_LINES == 0)
+            {
+                file_content = realloc(file_content, ((sizeof(char *)) * lines_read));
+            }
+        }
+
+        if (feof(fd))
+        {
+            file_content = realloc(file_content, sizeof(char *) * lines_read);
+        }
     }
 
-    *out_file_content = (char *)malloc(stats->st_size - 1);
+    out->content = file_content;
+    out->number_of_lines = lines_read;
 
-    char **file_content = malloc(sizeof(char *) * MORE_LINES);
+    *out_wordlist = out;
 
     fclose(fd);
-    free(stats);
 
     return STATUS_SUCCESS;
 }
