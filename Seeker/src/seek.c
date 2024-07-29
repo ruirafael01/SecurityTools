@@ -23,9 +23,9 @@ int seek(const struct arguments *arguments, const struct wordlist *wordlist)
         return STATUS_ERROR;
     }
 
-    FILE *fp = fopen("/dev/null", "r+");
+    FILE *fd = fopen("/dev/null", "r+");
 
-    if (fp == NULL)
+    if (fd == NULL)
     {
         perror("Error on opening CURL output file");
         return STATUS_ERROR;
@@ -35,18 +35,16 @@ int seek(const struct arguments *arguments, const struct wordlist *wordlist)
 
     CURL *handle = curl_easy_init();
 
-    char *base_url = "http://127.0.0.1/";
-
     curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, write_data);
-    curl_easy_setopt(handle, CURLOPT_WRITEDATA, fp);
+    curl_easy_setopt(handle, CURLOPT_WRITEDATA, fd);
 
     for (int i = 0; i < wordlist->number_of_lines; i++)
     {
-        char end_url[strlen(base_url) + strlen(wordlist->content[i])];
+        char end_url[strlen(arguments->url) + strlen(wordlist->content[i])];
 
         memset(end_url, '\0', sizeof(end_url));
 
-        strcat(end_url, base_url);
+        strcat(end_url, arguments->url);
         strcat(end_url, wordlist->content[i]);
 
         curl_easy_setopt(handle, CURLOPT_URL, end_url);
@@ -73,6 +71,8 @@ int seek(const struct arguments *arguments, const struct wordlist *wordlist)
             printf("Resource %s does not exist!\n", end_url);
         }
     }
+
+    fclose(fd);
 
     curl_easy_cleanup(handle);
 

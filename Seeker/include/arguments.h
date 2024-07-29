@@ -4,15 +4,9 @@
 
 #include "common.h"
 
-union destination_address
-{
-    struct sockaddr_in *ipv4_address;
-    struct sockaddr_in6 *ipv6_address;
-};
-
 struct arguments
 {
-    union destination_address destination;
+    char *url;
     char *wordlist_path;
 };
 
