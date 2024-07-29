@@ -9,7 +9,7 @@ static size_t write_data(void *ptr, size_t size, size_t nmemb, FILE *stream)
     return written;
 }
 
-int seek(struct arguments *arguments, struct wordlist *wordlist)
+int seek(const struct arguments *arguments, const struct wordlist *wordlist)
 {
     if (arguments == NULL)
     {
@@ -24,6 +24,12 @@ int seek(struct arguments *arguments, struct wordlist *wordlist)
     }
 
     FILE *fp = fopen("/dev/null", "r+");
+
+    if (fp == NULL)
+    {
+        perror("Error on opening CURL output file");
+        return STATUS_ERROR;
+    }
 
     curl_global_init(CURL_GLOBAL_ALL);
 
@@ -67,6 +73,8 @@ int seek(struct arguments *arguments, struct wordlist *wordlist)
             printf("Resource %s does not exist!\n", end_url);
         }
     }
+
+    curl_easy_cleanup(handle);
 
     curl_global_cleanup();
 }

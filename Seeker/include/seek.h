@@ -4,6 +4,6 @@
 #include "arguments.h"
 #include "file.h"
 
-int seek(struct arguments *arguments, struct wordlist *wordlist);
+int seek(const struct arguments *arguments, const struct wordlist *wordlist);
 
 #endif
