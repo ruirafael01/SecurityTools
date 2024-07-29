@@ -4,9 +4,24 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
+#include <string.h>
 
 #include "../include/arguments.h"
 #include "../include/file.h"
+#include "../include/seek.h"
+
+static void cleanup(struct arguments *arguments, struct wordlist *wordlist)
+{
+    if (arguments != NULL)
+    {
+        delete_arguments(arguments);
+    }
+
+    if (wordlist != NULL)
+    {
+        delete_worldist(wordlist);
+    }
+}
 
 int main(int argc, char *argv[])
 {
@@ -39,12 +54,14 @@ int main(int argc, char *argv[])
     if (file_content(arguments->wordlist_path, &wordlist) != STATUS_SUCCESS)
     {
         exit(EXIT_FAILURE);
-        delete_arguments(arguments);
+        cleanup(arguments, wordlist);
     }
 
-    delete_arguments(arguments);
+    if (seek(arguments, wordlist) != STATUS_SUCCESS)
+    {
+        cleanup(arguments, wordlist);
+        exit(EXIT_FAILURE);
+    }
 
-    delete_worldist(wordlist);
-
-    printf("Hello world!\n");
+    cleanup(arguments, wordlist);
 }

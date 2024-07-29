@@ -14,9 +14,8 @@ clean:
 	rm -f bin/*
 
 $(TARGET): $(OBJ)
-	gcc -o $@ $?
+	gcc -o $@ $? -lcurl
 
 obj/%.o : src/%.c
-	gcc -c $< -o $@ -Iinclude
-
+	gcc -c $< -o $@ -Iinclude -I/usr/local/include
 all: clean $(TARGET)
