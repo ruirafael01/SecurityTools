@@ -7,7 +7,7 @@ OBJ = $(patsubst src/%.c, obj/%.o, $(SRC))
 default: all
 
 valgrind: all
-		  valgrind --leak-check=full ./bin/$(EXECUTABLE_NAME)
+		  valgrind --leak-check=full --track-origins=yes ./bin/$(EXECUTABLE_NAME) -w test_wordlist.txt -d 127.0.0.1
 
 clean:
 	rm -f obj/*.o

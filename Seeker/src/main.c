@@ -35,28 +35,16 @@ int main(int argc, char *argv[])
     }
 
     struct wordlist *wordlist = NULL;
-    
+
     if (file_content(arguments->wordlist_path, &wordlist) != STATUS_SUCCESS)
     {
         exit(EXIT_FAILURE);
         delete_arguments(arguments);
     }
-    
-    for (int i = 0; i < wordlist->number_of_lines; i++)
-    {
-        printf("Line %s\n", wordlist->content[i]);
-    }
 
     delete_arguments(arguments);
 
-    for (int i = 0; i < wordlist->number_of_lines; i++)
-    {
-        free(wordlist->content[i]);
-    }
-
-    free(wordlist->content);
-        
-    free(wordlist);
+    delete_worldist(wordlist);
 
     printf("Hello world!\n");
 }

@@ -1,11 +1,14 @@
 #ifndef FILE_H
 #define FILE_H
 
-struct wordlist{ 
+struct wordlist
+{
     size_t number_of_lines;
     char **content;
 };
 
 int file_content(const char *file_path, struct wordlist **out_wordlist);
+
+void delete_worldist(struct wordlist *wordlist);
 
 #endif

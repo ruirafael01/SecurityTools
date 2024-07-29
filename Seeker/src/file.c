@@ -41,6 +41,12 @@ int file_content(const char *file_path, struct wordlist **out_wordlist)
     {
         c = fgetc(fd);
 
+        if (feof(fd))
+        {
+            file_content = realloc(file_content, sizeof(char *) * lines_read);
+            break;
+        }
+
         if (characters_read == 0)
         {
             file_content[lines_read] = malloc(DEFAULT_LINE_SIZE);
@@ -71,11 +77,6 @@ int file_content(const char *file_path, struct wordlist **out_wordlist)
                 file_content = realloc(file_content, ((sizeof(char *)) * lines_read));
             }
         }
-
-        if (feof(fd))
-        {
-            file_content = realloc(file_content, sizeof(char *) * lines_read);
-        }
     }
 
     out->content = file_content;
@@ -86,4 +87,24 @@ int file_content(const char *file_path, struct wordlist **out_wordlist)
     fclose(fd);
 
     return STATUS_SUCCESS;
+}
+
+void delete_worldist(struct wordlist *wordlist)
+{
+    if (wordlist == NULL)
+    {
+        return;
+    }
+
+    for (int i = 0; i < wordlist->number_of_lines; i++)
+    {
+        if (wordlist->content[i] != NULL)
+        {
+            free(wordlist->content[i]);
+        }
+    }
+
+    free(wordlist->content);
+
+    free(wordlist);
 }
