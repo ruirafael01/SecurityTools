@@ -32,8 +32,6 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    printf("Path to wordlist %s\n", arguments->wordlist_path);
-
     struct wordlist *wordlist = NULL;
 
     if (file_content(arguments->wordlist_path, &wordlist) != STATUS_SUCCESS)

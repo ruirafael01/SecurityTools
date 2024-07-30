@@ -38,9 +38,11 @@ int seek(const struct arguments *arguments, const struct wordlist *wordlist)
     curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, write_data);
     curl_easy_setopt(handle, CURLOPT_WRITEDATA, fd);
 
+    const size_t base_url_length = strlen(arguments->url);
+
     for (int i = 0; i < wordlist->number_of_lines; i++)
     {
-        char end_url[strlen(arguments->url) + strlen(wordlist->content[i])];
+        char end_url[base_url_length + strlen(wordlist->content[i])];
 
         memset(end_url, '\0', sizeof(end_url));
 
@@ -62,13 +64,9 @@ int seek(const struct arguments *arguments, const struct wordlist *wordlist)
 
         curl_easy_getinfo(handle, CURLINFO_RESPONSE_CODE, &http_code);
 
-        if (http_code < 400)
+        if (arguments->http_codes[http_code] == true)
         {
-            printf("Resource %s exists!\n", end_url);
-        }
-        else
-        {
-            printf("Resource %s does not exist!\n", end_url);
+            printf("GET %s | HTTP Code: %ld\n", end_url, http_code);
         }
     }
 
